@@ -1,17 +1,13 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Tally Counter Pro
+ * https://github.com/Gigacore/tally-counter-pro
  *
  * @format
  * @flow
  */
 
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  SafeAreaView
-} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 
 import TallyCounter from './components/views/TallyCounter';
 

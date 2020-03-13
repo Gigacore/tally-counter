@@ -1,5 +1,14 @@
 import React, {Component} from 'react';
-import {Text, View, Alert, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  Text,
+  View,
+  Alert,
+  StyleSheet,
+  TouchableOpacity,
+  Vibration,
+  Modal,
+} from 'react-native';
+import SaveCount from './SaveCount';
 
 export default class TallyCounter extends Component {
   constructor(props) {
@@ -7,17 +16,20 @@ export default class TallyCounter extends Component {
 
     this.state = {
       count: 0,
+      modalVisibility: false,
     };
 
     this.incrementCount = this.incrementCount.bind(this);
     this.decrementCount = this.decrementCount.bind(this);
     this.resetCount = this.resetCount.bind(this);
+    this.saveCount = this.saveCount.bind(this);
   }
 
   incrementCount = () => {
     this.setState({
       count: this.state.count + 1,
     });
+    Vibration.vibrate(100);
   };
 
   decrementCount = () => {
@@ -43,10 +55,17 @@ export default class TallyCounter extends Component {
           onPress: () =>
             this.setState({
               count: 0,
-        })},
+            }),
+        },
       ],
       {cancelable: false},
     );
+  };
+
+  saveCount = () => {
+    this.setState({
+      modalVisibility: true,
+    });
   };
 
   render() {
@@ -54,36 +73,28 @@ export default class TallyCounter extends Component {
       return <View style={styles.separator} />;
     }
 
+    const { count } = this.state;
+
     return (
       <>
         <View style={styles.container}>
+          <Modal
+            visible={this.state.modalVisibility}
+            onRequestClose={() => {
+              this.setState({
+                modalVisibility: false,
+              });
+            }}>
+            <SaveCount count={count} />
+          </Modal>
           <TouchableOpacity
             onPress={() => this.incrementCount()}
+            activeOpacity={1}
             style={styles.meter}>
-            <Text style={styles.counter}>{this.state.count}</Text>
+            <Text style={styles.counter}>{count}</Text>
             <Text style={styles.addition}>+</Text>
           </TouchableOpacity>
           <Separator />
-          {/* <TouchableOpacity
-            onPress={() => this.decrementCount()}
-            activeOpacity={1}
-            style={styles.decrement}>
-            <Text>&#8211;</Text>
-          </TouchableOpacity> */}
-
-          {/* <Image source={require('../../assets/reset.png')} /> */}
-          {/* <Button
-            style={styles.button}
-            title="-"
-            onPress={() => this.decrementCount()}
-          />
-          <Separator />
-          <Button
-            style={styles.button}
-            title="Reset"
-            onPress={() => this.resetCount()}
-          /> */}
-
           <View style={styles.controls}>
             <TouchableOpacity
               onPress={() => this.resetCount()}
@@ -91,12 +102,23 @@ export default class TallyCounter extends Component {
               style={styles.control}>
               <Text>Reset</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.saveCount()}
+              activeOpacity={1}
+              style={styles.control}>
+              <Text>Save</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </>
     );
   }
 }
+
+const darkTheme = {
+  backgroundColor: '#000',
+  color: '#fff',
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -119,7 +141,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   meter: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f9f9f9',
     borderRadius: 300,
     width: 300,
     height: 300,
@@ -145,12 +167,12 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
+    color: '#fff',
   },
   control: {
-    textAlign: 'center',
     height: 40,
-    width: '100%',
-    display: 'flex',
+    width: '50%',
+    // display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     borderTopColor: '#ccc',
